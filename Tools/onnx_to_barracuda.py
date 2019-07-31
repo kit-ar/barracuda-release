@@ -442,7 +442,7 @@ def process_layer(layer, context, args):
     beta        = get_attr(layer, 'beta') or get_attr(layer, 'epsilon')
     # TODO: decide what to do with 'is_test' attribute
 
-    if auto_pad and not auto_pad in known_paddings:
+    if auto_pad and auto_pad != "NOTSET" and not auto_pad in known_paddings:
         print('IGNORED: unknown padding', auto_pad)
 
     if size == [None, None]:
@@ -450,7 +450,7 @@ def process_layer(layer, context, args):
     if size: size = np.array(size).astype(int).tolist()
 
     o_l.activation  = known_activations.get(activation) or 0
-    o_l.pads        = known_paddings.get(auto_pad) if auto_pad else pads or starts or [0,0,0,0]
+    o_l.pads        = known_paddings.get(auto_pad) if (auto_pad and auto_pad != "NOTSET") else pads or starts or [0,0,0,0]
     o_l.strides     = strides or slice_strides or []
     o_l.pool_size   = pool_size or size or shape or ends or []
     o_l.axis        = embody(axis, default=-1)
